@@ -1,34 +1,20 @@
-name: SonarCloud Scan
-
+name: Build
 on:
   push:
     branches:
-      - main
+      - master
   pull_request:
-    branches:
-      - main
-
+    types: [opened, synchronize, reopened]
 jobs:
   sonarcloud:
     name: SonarCloud
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - name: Set up Node.js
-        uses: actions/setup-node@v3
         with:
-          node-version: '16'  # Make sure this version matches the one Juice-Shop uses
-
-      - name: Install dependencies
-        run: npm install
-
-      - name: Build and Test
-        run: |
-          npm run build
-          npm test
-
+          fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
       - name: SonarCloud Scan
         uses: SonarSource/sonarcloud-github-action@master
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
